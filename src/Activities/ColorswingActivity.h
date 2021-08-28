@@ -6,20 +6,21 @@ class ColorswingActivity : public LedActivity {
 public:
     ColorswingActivity(MotionState* _motionState, LedControl* _ledControl) : LedActivity(_motionState, _ledControl)
     {
-        palette = CRGBPalette16(CRGB::Red, CRGB::Green, CRGB::Blue, CRGB::Yellow);
+        //palette = CRGBPalette16(CRGB::Red, CRGB::Green, CRGB::Blue, CRGB::Yellow);
+        palette = OceanColors_p;
     }
 
     bool enter(int param)
     {
         ledControl->minBrightness = 0;
-        ledControl->addressingMode = Centered;
+        ledControl->addressingMode = Mirror;
     }
 
     bool update(bool realMode)
     {
         int c = motionState->relativeAngularVelocity;
         CRGB color = ColorFromPalette( palette, c, 255, NOBLEND);
-        for (int i = 0; i < NUM_LEDS; i++)
+        for (int i = 0; i < TRUE_LEDS / 2; i++)
         {
             ledControl->leds[i] = color;
         }

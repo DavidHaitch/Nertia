@@ -29,26 +29,28 @@ DEFINE_GRADIENT_PALETTE(pfoenix_p){
 
 CRGBPalette16 palette;
 
-ColormapActivity colormap(&motionState, &ledControl, &palette, 16, 8);
+ColormapActivity colormap(&motionState, &ledControl, &palette, 20, 10);
 ColormapActivity colormap_frantic(&motionState, &ledControl, &palette, 6000, 28);
 ColorswingActivity colorswing(&motionState, &ledControl);
 FiremapActivity firemap(&motionState, &ledControl);
 GravityActivity gravity(&motionState, &ledControl);
 FlashActivity flash(&motionState, &ledControl);
 ColorsweepActivity colorsweep(&motionState, &ledControl, RainbowColors_p);
+ColorsweepActivity colorsweep_waterbend(&motionState, &ledControl, OceanColors_p);
 ColorsweepActivity pfoenix(&motionState, &ledControl, pfoenix_p);
 
 PovActivity pov(&motionState, &ledControl);
 SiezureActivity zap(&motionState, &ledControl);
 PlasmaActivity plasma(&motionState, &ledControl);
 
-#define NUM_BASE_ACTIVITIES 7
+#define NUM_BASE_ACTIVITIES 8
 LedActivity *baseActivities[NUM_BASE_ACTIVITIES] =
     {
         &colormap,
         &firemap,
         &gravity,
         &colorsweep,
+        &colorsweep_waterbend,
         &plasma,
         &zap,
         &colorswing};
@@ -58,6 +60,7 @@ LedEffect *effects[NUM_BASE_ACTIVITIES] =
         &brightswing,
         &noop,
         &noop,
+        &brightmap,
         &brightmap,
         &brightswing,
         &noop,

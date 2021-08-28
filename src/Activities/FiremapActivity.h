@@ -8,10 +8,11 @@ public:
     FiremapActivity(MotionState *_motionState, LedControl *_ledControl) : LedActivity(_motionState, _ledControl)
     {
         palette = CRGBPalette16(
-            0x000000, 0x330000, 0x661100, 0x991100,
-            0xCC2200, 0xFF3300, 0xFF4400, 0xFF6600,
-            0xFF9900, 0xFFCC00, 0xFFFF00, 0xFFFF33,
-            0xFFFF33, 0x6633FF, 0xFFFFCC, 0xFFFFFF);
+            0x000000, 0x000033, 0x001166, 0x001199,
+            0x0022CC, 0x0033FF, 0x0044FF, 0x0066FF,
+            0x0099FF, 0x00CCFF, 0x00FFFF, 0x33FFFF,
+            0x33FFFF, 0x3366FF, 0xCCFFFF, 0xFFFFFF);
+        palette = HeatColors_p;
     }
 
     bool enter(int param)
@@ -27,12 +28,18 @@ public:
         {
             lastFireTick = now;
             int angVel = (motionState->angularVelocity * (180 / 3.14159));
+#ifdef DART
+            int spinout = 360 * 8;
+
+#endif
+#ifndef DART
             int spinout = 360 * 4;
+#endif
             for (int i = 0; i < TRUE_LEDS / 2; i++)
             {
                 int coolingFactor = map(angVel, 0, spinout, 2, 8);
-                int temperature = map(angVel, 0, spinout, 150, 240);
-                int heatChance = map(angVel, 0, spinout, 2, 16);
+                int temperature = map(angVel, 0, spinout, 170, 240);
+                int heatChance = map(angVel, 0, spinout, 4, 24);
                 if (angVel > spinout)
                 {
                     temperature /= 2;
@@ -44,7 +51,7 @@ public:
                 {
                     heat[i] -= coolingFactor;
                 }
-                else if (angVel > spinout && rand()%255 < 8)
+                else if (angVel > spinout && rand() % 255 < 8)
                 {
                     heat[i] = (-1 * rand() % 1024) - 512;
                 }
@@ -87,30 +94,35 @@ public:
             }
             else
             {
-                if (motionState->rawAxialAccel < 0)
-                {
-                    for (int i = TRUE_LEDS / 2; i > 0; i--)
+#ifdef DART
+                if (motionState->rawAxialAccel > 0)
+#endif
+#ifndef DART
+                    if (motionState->rawAxialAccel < 0)
+#endif
                     {
-                        if (heat[i] >= 0 && heat[i - 1] >= 0)
+                        for (int i = TRUE_LEDS / 2; i > 0; i--)
                         {
-                            heat[i] += heat[i - 1] * 0.75;
-                            heat[i - 1] -= heat[i - 1] * 0.75;
+                            if (heat[i] >= 0 && heat[i - 1] >= 0)
+                            {
+                                heat[i] += heat[i - 1] * 0.75;
+                                heat[i - 1] -= heat[i - 1] * 0.75;
+                            }
                         }
                     }
-                }
-                else
-                {
-                    for (int i = 0; i < (TRUE_LEDS / 2) - 1; i++)
+                    else
                     {
-                        if (heat[i] >= 0 && heat[i + 1] >= 0)
+                        for (int i = 0; i < (TRUE_LEDS / 2) - 1; i++)
                         {
-                            heat[i] += heat[i + 1] * 0.75;
-                            heat[i + 1] -= heat[i + 1] * 0.75;
+                            if (heat[i] >= 0 && heat[i + 1] >= 0)
+                            {
+                                heat[i] += heat[i + 1] * 0.75;
+                                heat[i + 1] -= heat[i + 1] * 0.75;
+                            }
                         }
-                    }
 
-                    heat[0] = 0;
-                }
+                        heat[0] = 0;
+                    }
             }
         }
 
@@ -118,7 +130,7 @@ public:
         {
             if (heat[i] >= 0)
             {
-                ledControl->leds[i] = ColorFromPalette(HeatColors_p, heat[i], 255, LINEARBLEND);
+                ledControl->leds[i] = ColorFromPalette(palette, heat[i], 255, LINEARBLEND);
             }
             else
             {
