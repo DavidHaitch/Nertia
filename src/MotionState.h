@@ -3,7 +3,7 @@
 #include "SensorFusion.h"
 
 #include <Adafruit_ICM20649.h>
-#include <Adafruit_Sensor.h> 
+#include <Adafruit_Sensor.h>
 
 class MotionState
 {
@@ -20,10 +20,14 @@ public:
     float pointingX;
     float pointingY;
     float pointingZ;
-    
+    float qx;
+    float qy;
+    float qz;
+    float qw;
+
     float rawAxialAccel;
     float centripetalAccel;
-    int Update(Adafruit_ICM20649* imu); // returns milliseconds taken
+    int Update(Adafruit_ICM20649 *imu); // returns milliseconds taken
 private:
     float maxAngularAcceleration;
     float maxAngularVelocity;

@@ -29,7 +29,7 @@ DEFINE_GRADIENT_PALETTE(pfoenix_p){
 
 CRGBPalette16 palette;
 
-ColormapActivity colormap(&motionState, &ledControl, &palette, 20, 10);
+ColormapActivity colormap(&motionState, &ledControl, &palette, 5, 15);
 ColormapActivity colormap_frantic(&motionState, &ledControl, &palette, 6000, 28);
 ColorswingActivity colorswing(&motionState, &ledControl);
 FiremapActivity firemap(&motionState, &ledControl);
@@ -66,7 +66,7 @@ LedEffect *effects[NUM_BASE_ACTIVITIES] =
         &noop,
         &brightmap};
 #define BRIGHTNESS_SETTINGS 3
-int brightnesses[BRIGHTNESS_SETTINGS] = {8, 64, 200};
+int brightnesses[BRIGHTNESS_SETTINGS] = {16, 64, 200};
 
 LedActivity *base;
 LedEffect *effect;
@@ -93,6 +93,7 @@ void showBatteryVoltage()
     for (int i = 0; i < samples; i++)
     {
         vbat += getBatteryVolts();
+        delay(1);
     }
 
     vbat /= samples;
@@ -152,11 +153,11 @@ void setup()
     palette = RainbowColors_p;
     for (int i = 0; i < 8; i++)
     {
-        int a = rand() % 16;
-        int b = (a + 8) % 16;
-        CRGB temp = palette[a];
-        palette[a] = palette[b];
-        palette[b] = temp;
+        // int a = rand() % 16;
+        // int b = (a + 8) % 16;
+        // CRGB temp = palette[a];
+        // palette[a] = palette[b];
+        // palette[b] = temp;
     }
     setupEndTime = millis();
 }
@@ -212,16 +213,26 @@ void loop()
     }
 
     int renderLag = millis() - renderStart;
-
     int pushStart = millis();
     ledControl.Refresh();
     int pushLag = millis() - pushStart;
-
-    // Serial.print(motionLag);
-    // Serial.print("\t");
-    // Serial.print(renderLag);
-    // Serial.print("\t");
-    // Serial.print(pushLag);
-    // Serial.print("\t");
-    // Serial.println(millis() - start);
+    if (start - lastDebugPrint > 16)
+    {
+        lastDebugPrint = start;
+        String s = String("{\"time\":") + start 
+        + String(", \"type\":") + String("\"angles\"") 
+        + String(", \"motionLag\":") + motionLag 
+        + String(", \"renderLag\":") + renderLag 
+        + String(", \"pushLag\":") + pushLag 
+        + String(", \"totalLag\":") + (millis() - start)
+        + String(", \"qw\":") + motionState.qw 
+        + String(", \"qx\":") + motionState.qx 
+        + String(", \"qy\":") + motionState.qy 
+        + String(", \"qz\":") + motionState.qz 
+        + String(", \"x\":") + motionState.pointingX 
+        + String(", \"y\":") + motionState.pointingY 
+        + String(", \"z\":") + motionState.pointingZ 
+        + "}";
+        Serial.println(s);
+    }
 }
