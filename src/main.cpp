@@ -66,7 +66,7 @@ LedEffect *effects[NUM_BASE_ACTIVITIES] =
         &noop,
         &brightmap};
 #define BRIGHTNESS_SETTINGS 3
-int brightnesses[BRIGHTNESS_SETTINGS] = {16, 64, 200};
+int brightnesses[BRIGHTNESS_SETTINGS] = {16, 64, 255};
 
 LedActivity *base;
 LedEffect *effect;
@@ -219,20 +219,7 @@ void loop()
     if (start - lastDebugPrint > 16)
     {
         lastDebugPrint = start;
-        String s = String("{\"time\":") + start 
-        + String(", \"type\":") + String("\"angles\"") 
-        + String(", \"motionLag\":") + motionLag 
-        + String(", \"renderLag\":") + renderLag 
-        + String(", \"pushLag\":") + pushLag 
-        + String(", \"totalLag\":") + (millis() - start)
-        + String(", \"qw\":") + motionState.qw 
-        + String(", \"qx\":") + motionState.qx 
-        + String(", \"qy\":") + motionState.qy 
-        + String(", \"qz\":") + motionState.qz 
-        + String(", \"x\":") + motionState.pointingX 
-        + String(", \"y\":") + motionState.pointingY 
-        + String(", \"z\":") + motionState.pointingZ 
-        + "}";
+        String s = String("{\"time\":") + start + String(", \"type\":") + String("\"angles\"") + String(", \"motionLag\":") + motionLag + String(", \"renderLag\":") + renderLag + String(", \"pushLag\":") + pushLag + String(", \"totalLag\":") + (millis() - start) + String(", \"qw\":") + motionState.qw + String(", \"qx\":") + motionState.qx + String(", \"qy\":") + motionState.qy + String(", \"qz\":") + motionState.qz + String(", \"x\":") + motionState.pointingX + String(", \"y\":") + motionState.pointingY + String(", \"z\":") + motionState.pointingZ + "}";
         Serial.println(s);
     }
 }
