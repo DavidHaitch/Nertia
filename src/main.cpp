@@ -29,13 +29,14 @@ DEFINE_GRADIENT_PALETTE(pfoenix_p){
 
 CRGBPalette16 palette;
 
-ColormapActivity colormap(&motionState, &ledControl, &palette, 5, 15);
+ColormapActivity colormap(&motionState, &ledControl, &palette, 1, 10);
 ColormapActivity colormap_frantic(&motionState, &ledControl, &palette, 6000, 28);
 ColorswingActivity colorswing(&motionState, &ledControl);
 FiremapActivity firemap(&motionState, &ledControl);
 GravityActivity gravity(&motionState, &ledControl);
 FlashActivity flash(&motionState, &ledControl);
 ColorsweepActivity colorsweep(&motionState, &ledControl, RainbowColors_p);
+ColorclimbActivity colorclimb(&motionState, &ledControl, RainbowColors_p);
 ColorsweepActivity colorsweep_waterbend(&motionState, &ledControl, OceanColors_p);
 ColorsweepActivity pfoenix(&motionState, &ledControl, pfoenix_p);
 
@@ -46,21 +47,21 @@ PlasmaActivity plasma(&motionState, &ledControl);
 #define NUM_BASE_ACTIVITIES 8
 LedActivity *baseActivities[NUM_BASE_ACTIVITIES] =
     {
+        &colorsweep,
         &colormap,
+        &colorclimb,
         &firemap,
         &gravity,
-        &colorsweep,
-        &colorsweep_waterbend,
         &plasma,
         &zap,
         &colorswing};
 
 LedEffect *effects[NUM_BASE_ACTIVITIES] =
     {
-        &brightswing,
         &noop,
         &noop,
-        &brightmap,
+        &sparkle,
+        &noop,
         &brightmap,
         &brightswing,
         &noop,
@@ -125,14 +126,14 @@ void showBatteryVoltage()
 
 void setup()
 {
-    Serial.begin(115200);
+    //Serial.begin(115200);
     //while (!Serial){}
     showBatteryVoltage();
 
     bool s = false;
     while (!imu.begin_SPI(ICM_CS))
     {
-        Serial.println("Starting");
+        //Serial.println("Starting");
         digitalWrite(17, s);
         delay(250);
         s = !s;
@@ -216,23 +217,23 @@ void loop()
     int pushStart = millis();
     ledControl.Refresh();
     int pushLag = millis() - pushStart;
-    if (start - lastDebugPrint > 16)
-    {
-        lastDebugPrint = start;
-        String s = String("{\"time\":") + start 
-        + String(", \"type\":") + String("\"angles\"") 
-        + String(", \"motionLag\":") + motionLag 
-        + String(", \"renderLag\":") + renderLag 
-        + String(", \"pushLag\":") + pushLag 
-        + String(", \"totalLag\":") + (millis() - start)
-        + String(", \"qw\":") + motionState.qw 
-        + String(", \"qx\":") + motionState.qx 
-        + String(", \"qy\":") + motionState.qy 
-        + String(", \"qz\":") + motionState.qz 
-        + String(", \"x\":") + motionState.pointingX 
-        + String(", \"y\":") + motionState.pointingY 
-        + String(", \"z\":") + motionState.pointingZ 
-        + "}";
-        Serial.println(s);
-    }
+    // if (start - lastDebugPrint > 16)
+    // {
+    //     lastDebugPrint = start;
+    //     String s = String("{\"time\":") + start 
+    //     + String(", \"type\":") + String("\"angles\"") 
+    //     + String(", \"motionLag\":") + motionLag 
+    //     + String(", \"renderLag\":") + renderLag 
+    //     + String(", \"pushLag\":") + pushLag 
+    //     + String(", \"totalLag\":") + (millis() - start)
+    //     + String(", \"qw\":") + motionState.qw 
+    //     + String(", \"qx\":") + motionState.qx 
+    //     + String(", \"qy\":") + motionState.qy 
+    //     + String(", \"qz\":") + motionState.qz 
+    //     + String(", \"x\":") + motionState.pointingX 
+    //     + String(", \"y\":") + motionState.pointingY 
+    //     + String(", \"z\":") + motionState.pointingZ 
+    //     + "}";
+    //     Serial.println(s);
+    // }
 }

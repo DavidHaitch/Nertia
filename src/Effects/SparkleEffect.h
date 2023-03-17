@@ -13,30 +13,15 @@ public:
     {
 
         int angVel = (motionState->angularVelocity * (180 / 3.14159));
-        if (abs(angVel) < 90)
+        EVERY_N_MILLIS(100)
         {
-            if (motionState->rawAxialAccel > 0)
-            {
-                if (lastInversion < 0)
-                    lastInversion = millis();
-                if (millis() - lastInversion > 5000)
-                {
-                    EVERY_N_SECONDS(1)
-                    {
-                        if (sparkles < NUM_LEDS / 4)
-                            sparkles++;
-                    }
-                }
-            }
-            else
-            {
-                lastInversion = -1;
-                EVERY_N_MILLIS(100)
-                {
-                    if (sparkles > 0)
-                        sparkles--;
-                }
-            }
+            if (sparkles > 0)
+                sparkles--;
+        }
+        EVERY_N_MILLIS(200)
+        {
+            if (sparkles < TRUE_LEDS / 4)
+                sparkles += map(angVel, 0,1080, 0, 6);
         }
 
         for (int i = 0; i < sparkles; i++)
@@ -48,7 +33,7 @@ public:
         {
             for (int i = 0; i < sparkles; i++)
             {
-                sparkleIndices[i] = rand() % (NUM_LEDS);
+                sparkleIndices[i] = rand() % (TRUE_LEDS);
             }
         }
 
@@ -56,9 +41,8 @@ public:
     }
 
 private:
-    int sparkleTime = 35;
+    int sparkleTime = 50;
     int sparkles = 0;
-    int sparkleIndices[NUM_LEDS];
-    long lastInversion = 0;
+    int sparkleIndices[TRUE_LEDS];
 };
 #endif

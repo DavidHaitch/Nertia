@@ -25,22 +25,22 @@ public:
 
     bool update(bool realMode)
     {
-        if (millis() - lastShiftStep > 200)
+        if (millis() - lastShiftStep > 800)
         {
             lastShiftStep = millis();
             shift++;
         }
 
 #ifndef DART
-        uint8_t spatialShift = abs(motionState->pointingZ) * 64;
+        uint8_t spatialShift = abs(motionState->pointingZ) * 1;
 #else
-        uint8_t spatialShift = motionState->pointingZ * 64;
+        uint8_t spatialShift = motionState->pointingZ * 1;
 #endif
 
         for (int i = 0; i < TRUE_LEDS / 2; i++)
         {
             float r = baseDistance + (stepDistance * i);
-            int c = inoise8(motionState->pointingX * r, motionState->pointingY * r, motionState->pointingZ * r);
+            int c = inoise8(motionState->pointingX * r, motionState->pointingY * r, motionState->pointingZ * r) * 2;
             CRGB color = ColorFromPalette(*palette, c + shift + spatialShift, 255, LINEARBLEND);
             ledControl->leds[i] = color;
         }

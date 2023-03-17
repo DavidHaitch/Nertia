@@ -2,6 +2,7 @@
 #define ACTIVITIES_H
 //#include "LedActivity.h"
 #include "Activities/ColormapActivity.h"
+#include "Activities/ColorclimbActivity.h"
 #include "Activities/FiremapActivity.h"
 #include "Activities/ColorsweepActivity.h"
 #include "ConfigManager.h"
