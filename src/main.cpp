@@ -28,6 +28,7 @@ DEFINE_GRADIENT_PALETTE(pfoenix_p){
     255, 0, 0, 0};
 
 CRGBPalette16 palette;
+CRGBPalette16 oceanPalette = OceanColors_p;
 
 ColormapActivity colormap(&motionState, &ledControl, &palette, 1, 10);
 ColormapActivity colormap_frantic(&motionState, &ledControl, &palette, 6000, 28);
@@ -35,10 +36,9 @@ ColorswingActivity colorswing(&motionState, &ledControl);
 FiremapActivity firemap(&motionState, &ledControl);
 GravityActivity gravity(&motionState, &ledControl);
 FlashActivity flash(&motionState, &ledControl);
-ColorsweepActivity colorsweep(&motionState, &ledControl, RainbowColors_p);
-ColorclimbActivity colorclimb(&motionState, &ledControl, RainbowColors_p);
-ColorsweepActivity colorsweep_waterbend(&motionState, &ledControl, OceanColors_p);
-ColorsweepActivity pfoenix(&motionState, &ledControl, pfoenix_p);
+ColorsweepActivity colorsweep(&motionState, &ledControl, &palette);
+ColorclimbActivity colorclimb(&motionState, &ledControl, &palette);
+ColorsweepActivity colorsweep_waterbend(&motionState, &ledControl, &oceanPalette);
 
 PovActivity pov(&motionState, &ledControl);
 SiezureActivity zap(&motionState, &ledControl);
@@ -47,14 +47,15 @@ PlasmaActivity plasma(&motionState, &ledControl);
 #define NUM_BASE_ACTIVITIES 8
 LedActivity *baseActivities[NUM_BASE_ACTIVITIES] =
     {
-        &colorsweep,
         &colormap,
+        &colorsweep,
         &colorclimb,
         &firemap,
         &gravity,
         &plasma,
         &zap,
-        &colorswing};
+        &colorswing
+    };
 
 LedEffect *effects[NUM_BASE_ACTIVITIES] =
     {
@@ -65,7 +66,9 @@ LedEffect *effects[NUM_BASE_ACTIVITIES] =
         &brightmap,
         &brightswing,
         &noop,
-        &brightmap};
+        &brightmap
+    };
+
 #define BRIGHTNESS_SETTINGS 3
 int brightnesses[BRIGHTNESS_SETTINGS] = {16, 64, 128};
 
@@ -127,7 +130,7 @@ void showBatteryVoltage()
 void setup()
 {
     //Serial.begin(115200);
-    //while (!Serial){}
+    // while (!Serial){}
     showBatteryVoltage();
 
     bool s = false;
@@ -178,14 +181,14 @@ void loop()
     long renderStart = millis();
     base->update(configured);
 
-    if (!configured && millis() - setupEndTime > 2000)
+    if (!configured && millis() - setupEndTime > 1000)
     {
         int c = config.configure(&motionState, &ledControl);
 
         if (c == 1)
         {
             ledControl.maxBrightness = brightnesses[config.options[0] % BRIGHTNESS_SETTINGS];
-            base = transitionActivity(base, base); //Reinit base activity with new settings.
+            base = transitionActivity(base, base); // Reinit base activity with new settings.
         }
 
         if (c == 2)
@@ -220,19 +223,19 @@ void loop()
     // if (start - lastDebugPrint > 16)
     // {
     //     lastDebugPrint = start;
-    //     String s = String("{\"time\":") + start 
-    //     + String(", \"type\":") + String("\"angles\"") 
-    //     + String(", \"motionLag\":") + motionLag 
-    //     + String(", \"renderLag\":") + renderLag 
-    //     + String(", \"pushLag\":") + pushLag 
+    //     String s = String("{\"time\":") + start
+    //     + String(", \"type\":") + String("\"angles\"")
+    //     + String(", \"motionLag\":") + motionLag
+    //     + String(", \"renderLag\":") + renderLag
+    //     + String(", \"pushLag\":") + pushLag
     //     + String(", \"totalLag\":") + (millis() - start)
-    //     + String(", \"qw\":") + motionState.qw 
-    //     + String(", \"qx\":") + motionState.qx 
-    //     + String(", \"qy\":") + motionState.qy 
-    //     + String(", \"qz\":") + motionState.qz 
-    //     + String(", \"x\":") + motionState.pointingX 
-    //     + String(", \"y\":") + motionState.pointingY 
-    //     + String(", \"z\":") + motionState.pointingZ 
+    //     + String(", \"qw\":") + motionState.qw
+    //     + String(", \"qx\":") + motionState.qx
+    //     + String(", \"qy\":") + motionState.qy
+    //     + String(", \"qz\":") + motionState.qz
+    //     + String(", \"x\":") + motionState.pointingX
+    //     + String(", \"y\":") + motionState.pointingY
+    //     + String(", \"z\":") + motionState.pointingZ
     //     + "}";
     //     Serial.println(s);
     // }
