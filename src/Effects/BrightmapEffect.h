@@ -17,7 +17,7 @@ public:
       int b = inoise8(abs(motionState->pointingX) * r, abs(motionState->pointingY) * r, abs(motionState->pointingZ) * r);
       b = qsub8(b, 16);
       b = qadd8(b, scale8(b, 39));
-      if (b < 64)
+      if (b < 96)
         b = 0;
       if (b > 192)
         b = 255;
@@ -28,7 +28,7 @@ public:
   }
 
 private:
-  int baseDistance = 400;  // governs how drastically color changes with movement
-  float stepDistance = 30; //governs how different each pixel is from the one before it.
+  int baseDistance = 800;  // governs how drastically color changes with movement
+  float stepDistance = 10; //governs how different each pixel is from the one before it.
 };
 #endif

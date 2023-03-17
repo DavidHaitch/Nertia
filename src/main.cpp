@@ -35,9 +35,8 @@ ColorswingActivity colorswing(&motionState, &ledControl);
 FiremapActivity firemap(&motionState, &ledControl);
 GravityActivity gravity(&motionState, &ledControl);
 FlashActivity flash(&motionState, &ledControl);
-ColorsweepActivity colorsweep(&motionState, &ledControl, RainbowColors_p);
-ColorsweepActivity colorsweep_waterbend(&motionState, &ledControl, OceanColors_p);
-ColorsweepActivity pfoenix(&motionState, &ledControl, pfoenix_p);
+ColorsweepActivity colorsweep(&motionState, &ledControl, &palette);
+//ColorsweepActivity pfoenix(&motionState, &ledControl, pfoenix_p);
 
 PovActivity pov(&motionState, &ledControl);
 SiezureActivity zap(&motionState, &ledControl);
@@ -50,23 +49,21 @@ LedActivity *baseActivities[NUM_BASE_ACTIVITIES] =
         &firemap,
         &gravity,
         &colorsweep,
-        &colorsweep_waterbend,
         &plasma,
         &zap,
         &colorswing};
 
 LedEffect *effects[NUM_BASE_ACTIVITIES] =
     {
-        &brightswing,
-        &noop,
-        &noop,
         &brightmap,
+        &noop,
+        &noop,
         &brightmap,
         &brightswing,
         &noop,
         &brightmap};
 #define BRIGHTNESS_SETTINGS 3
-int brightnesses[BRIGHTNESS_SETTINGS] = {16, 64, 255};
+int brightnesses[BRIGHTNESS_SETTINGS] = {16, 64, 128};
 
 LedActivity *base;
 LedEffect *effect;

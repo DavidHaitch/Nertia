@@ -7,7 +7,7 @@ public:
     ColorswingActivity(MotionState* _motionState, LedControl* _ledControl) : LedActivity(_motionState, _ledControl)
     {
         //palette = CRGBPalette16(CRGB::Red, CRGB::Green, CRGB::Blue, CRGB::Yellow);
-        palette = OceanColors_p;
+        //palette = OceanColors_p;
     }
 
     bool enter(int param)

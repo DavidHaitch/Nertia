@@ -5,7 +5,7 @@
 #define SWEEP_DELAY 200
 class ColorsweepActivity : public LedActivity {
 public:
-    ColorsweepActivity(MotionState* _motionState, LedControl* _ledControl, CRGBPalette16 _palette) : LedActivity(_motionState, _ledControl)
+    ColorsweepActivity(MotionState* _motionState, LedControl* _ledControl, CRGBPalette16* _palette) : LedActivity(_motionState, _ledControl)
     {
         palette = _palette;
     }
@@ -36,7 +36,7 @@ public:
             int color = inoise8(coord, r);
             color = qsub8(color, 16);
             color = qadd8(color, scale8(color, 39));
-            ledControl->leds[i] = ColorFromPalette( palette, color + offset, 255, LINEARBLEND);
+            ledControl->leds[i] = ColorFromPalette(*palette, color + offset, 255, LINEARBLEND);
         }
          
         return true;
@@ -51,6 +51,6 @@ private:
     long lastShiftTime;
     int baseDistance = 20; // governs how drastically color changes with movement
     int stepDistance = 70; //governs how different each pixel is from the one before it.
-    CRGBPalette16 palette;
+    CRGBPalette16* palette;
 };
 #endif

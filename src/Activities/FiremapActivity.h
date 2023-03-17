@@ -29,7 +29,7 @@ public:
             lastFireTick = now;
             int angVel = (motionState->angularVelocity * (180 / 3.14159));
 #ifdef DART
-            int spinout = 360 * 8;
+            int spinout = 360 * 12;
 
 #endif
 #ifndef DART
@@ -67,7 +67,7 @@ public:
             }
         }
 
-        if (now - lastFireRise > 8)
+        if (now - lastFireRise > 16)
         {
             lastFireRise = now;
             // cA = angVel^2 * radius
