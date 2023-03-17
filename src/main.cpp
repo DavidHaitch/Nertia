@@ -67,7 +67,7 @@ LedEffect *effects[NUM_BASE_ACTIVITIES] =
         &noop,
         &brightmap};
 #define BRIGHTNESS_SETTINGS 3
-int brightnesses[BRIGHTNESS_SETTINGS] = {16, 64, 200};
+int brightnesses[BRIGHTNESS_SETTINGS] = {16, 64, 128};
 
 LedActivity *base;
 LedEffect *effect;

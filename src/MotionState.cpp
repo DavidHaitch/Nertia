@@ -138,7 +138,7 @@ int MotionState::Update(Adafruit_ICM20649 *imu)
     pointingX = vprime.x;
     pointingY = vprime.y;
     pointingZ = vprime.z;
-    // if (startTime - lastDebugPrintTime > 30)
+    // if (startTime - lastDebugPrintTime > 100)
     // {
     //     lastDebugPrintTime = startTime;
 
@@ -161,10 +161,6 @@ int MotionState::Update(Adafruit_ICM20649 *imu)
     //     + String(", \"x\":") + pointingX
     //     + String(", \"y\":") + pointingY
     //     + String(", \"z\":") + pointingZ
-    //     + String(", \"A\":") + 1
-    //     + String(", \"M\":") + 1
-    //     + String(", \"G\":") + 1
-    //     + String(", \"S\":") + 1
     //     + "}";
     //     Serial.println(s);
     // }
