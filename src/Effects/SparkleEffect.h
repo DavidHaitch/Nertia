@@ -20,7 +20,7 @@ public:
         }
         EVERY_N_MILLIS(200)
         {
-            if (sparkles < TRUE_LEDS / 4)
+            if (sparkles < TRUE_LEDS / 8)
                 sparkles += map(angVel, 0,1080, 0, 6);
         }
 
