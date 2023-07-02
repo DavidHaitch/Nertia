@@ -19,6 +19,7 @@ public:
     {
         ledControl->minBrightness = 4;
         ledControl->addressingMode = Mirror;
+        return true;
     }
 
     bool update(bool realMode)
@@ -32,7 +33,10 @@ public:
             int spinout = 360 * 12;
 
 #endif
-#ifndef DART
+#ifdef BATON
+            int spinout = 360 * 6;
+#endif
+#ifdef STAFF
             int spinout = 360 * 4;
 #endif
             for (int i = 0; i < TRUE_LEDS / 2; i++)
@@ -44,7 +48,7 @@ public:
                 {
                     temperature /= 2;
                     heatChance /= 8;
-                    //coolingFactor *= 2;
+                    // coolingFactor *= 2;
                 }
 
                 if (heat[i] > coolingFactor)
@@ -67,7 +71,7 @@ public:
             }
         }
 
-        if (now - lastFireRise > 16)
+        if (now - lastFireRise > 2)
         {
             lastFireRise = now;
             // cA = angVel^2 * radius
@@ -139,13 +143,14 @@ public:
             }
         }
 
-        //blur1d(ledControl->leds, NUM_LEDS / 2, 64);
-        //blur1d(ledControl->leds, NUM_LEDS / 2, 92);
+        // blur1d(ledControl->leds, NUM_LEDS / 2, 64);
+        // blur1d(ledControl->leds, NUM_LEDS / 2, 92);
         return true;
     }
 
     bool exit(int param)
     {
+        return true;
     }
 
 private:

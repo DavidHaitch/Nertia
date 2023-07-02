@@ -21,6 +21,7 @@ public:
 #else
         ledControl->addressingMode = Centered;
 #endif
+        return true;
     }
 
     bool update(bool realMode)
@@ -50,13 +51,14 @@ public:
 
     bool exit(int param)
     {
+        return true;
     }
 
 private:
     long lastShiftStep = 0;
     uint8_t shift = 0;
     int baseDistance; // governs how drastically color changes with movement
-    int stepDistance; //governs how different each pixel is from the one before it.
+    int stepDistance; // governs how different each pixel is from the one before it.
     CRGBPalette16 *palette;
     CRGBPalette16 warmPalette;
     CRGBPalette16 coolPalette;

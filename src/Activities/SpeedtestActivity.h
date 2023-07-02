@@ -2,10 +2,10 @@
 #define SPEEDTESTACTIVITY_H
 #include "LedActivity.h"
 
-#define SWEEP_DELAY 5000
-class SpeedTestActivity : public LedActivity {
+class SpeedTestActivity : public LedActivity
+{
 public:
-    SpeedTestActivity(MotionState* _motionState, LedControl* _ledControl) : LedActivity(_motionState, _ledControl)
+    SpeedTestActivity(MotionState *_motionState, LedControl *_ledControl) : LedActivity(_motionState, _ledControl)
     {
     }
 
@@ -13,24 +13,29 @@ public:
     {
         ledControl->minBrightness = 0;
         ledControl->addressingMode = Centered;
+        return true;
     }
 
     bool update(bool realMode)
     {
         step++;
-        step %= NUM_LEDS/2;
-        for (int i = 0; i < NUM_LEDS/2; i++)
+        step %= NUM_LEDS / 2;
+        for (int i = 0; i < NUM_LEDS / 2; i++)
         {
-             if(i == step)  ledControl->leds[i] = CRGB::Red;
-            else  ledControl->leds[i] = CRGB::Black;
+            if (i == step)
+                ledControl->leds[i] = CRGB::Red;
+            else
+                ledControl->leds[i] = CRGB::Black;
         }
-         
+
         return true;
     }
 
     bool exit(int param)
     {
+        return true;
     }
+
 private:
     int step;
 };

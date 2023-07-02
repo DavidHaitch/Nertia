@@ -15,6 +15,7 @@ public:
     {
         ledControl->minBrightness = 0;
         ledControl->addressingMode = Mirror;
+        return true;
     }
 
     bool update(bool realMode)
@@ -57,6 +58,7 @@ public:
 
     bool exit(int param)
     {
+        return true;
     }
 
 private:

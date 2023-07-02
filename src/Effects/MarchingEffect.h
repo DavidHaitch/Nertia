@@ -31,6 +31,6 @@ class MarchingEffect : public LedEffect
   private:
     int place;
     long lastUpdate;
-    const int updateDelay = 0;
+    const uint8_t updateDelay = 0;
 };
 #endif

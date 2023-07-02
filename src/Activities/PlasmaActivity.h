@@ -15,18 +15,19 @@ public:
     {
         ledControl->minBrightness = 2;
         ledControl->addressingMode = Mirror;
+        return true;
     }
 
     bool update(bool realMode)
     {
-        //phase = (abs(motionState->orientation.getYawRadians()) + abs(motionState->orientation.getRollRadians())) / 2;
+        // phase = (abs(motionState->orientation.getYawRadians()) + abs(motionState->orientation.getRollRadians())) / 2;
         Point p1 = {1 + (sin(phase * 1.000)) * scale, 1 + (sin(phase * 1.310)) * scale, 1 + (sin(phase * 1.290)) * scale};
         Point p2 = {(sin(phase * 1.770)) * scale, (sin(phase * 2.865)) * scale, (sin(phase * 2.597)) * scale};
         for (int i = 0; i < TRUE_LEDS / 2; i++)
         {
             float r = baseDistance + (stepDistance * (float)i);
             Point p = {motionState->pointingX * r, motionState->pointingY * r, motionState->pointingZ * r};
-           // Point p = {r,r,r};
+            // Point p = {r,r,r};
 
             // Calculate the distance between this LED, and p1.
             Point dist1 = {p.x - p1.x, p.y - p1.y, p.z - p1.z}; // The vector from p1 to this LED.
@@ -35,7 +36,6 @@ public:
             // Calculate the distance between this LED, and p2.
             Point dist2 = {p.x - p2.x, p.y - p2.y, p.z - p2.z}; // The vector from p2 to this LED.
             float distance2 = sqrt(dist2.x * dist2.x + dist2.y * dist2.y + dist2.z * dist2.z);
-
 
             // Warp the distance with a sin() function. As the distance value increases, the LEDs will get light,dark,light,dark,etc...
             // You can use a cos() for slightly different shading, or experiment with other functions. Go crazy!
@@ -48,7 +48,7 @@ public:
             // color_1 *= color_1 * color_4;
             color_2 *= color_4;
             ledControl->leds[i] = CHSV(color_1 * 64.0, 255, color_2 * 64.0);
-            //ledControl->leds[i].maximizeBrightness();
+            // ledControl->leds[i].maximizeBrightness();
         }
 
         return true;
@@ -69,7 +69,7 @@ private:
     float phase = 10.0;
     float scale = 2;
     float baseDistance = 1;
-    float stepDistance = 1.0/4.0;
+    float stepDistance = 1.0 / 4.0;
     const float colorStretch = 0.1; // Higher numbers will produce tighter color bands. I like 0.11 .
 };
 #endif

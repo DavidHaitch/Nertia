@@ -13,6 +13,7 @@ public:
     {
         ledControl->minBrightness = 0;
         ledControl->addressingMode = Direct;
+    return true;
     }
 
     bool update(bool realMode)

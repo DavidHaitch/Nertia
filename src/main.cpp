@@ -106,7 +106,7 @@ void showBatteryVoltage()
     Serial.println(vbat);
     ledControl.Clear();
     CRGB c = CRGB::Green;
-    if (vbat >= 3.6 && vbat <= 4.0)
+    if (vbat >= 3.6 && vbat <= 3.9)
     {
         c = CRGB::Yellow;
     }
@@ -145,7 +145,7 @@ void setup()
     imu.setAccelRange(ICM20649_ACCEL_RANGE_4_G);
     imu.setAccelRateDivisor(0);
     imu.setGyroRateDivisor(0);
-    imu.setGyroRange(ICM20649_GYRO_RANGE_2000_DPS);
+    imu.setGyroRange(ICM20649_GYRO_RANGE_1000_DPS);
     ledControl.maxBrightness = brightnesses[0];
 
     base = baseActivities[0];

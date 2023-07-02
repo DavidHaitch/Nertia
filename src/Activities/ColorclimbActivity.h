@@ -2,7 +2,7 @@
 #define COLORCLIMBACTIVITY_H
 #include "LedActivity.h"
 
-#define SWEEP_DELAY 8000
+#define CLIMB_DELAY 8000
 class ColorclimbActivity : public LedActivity
 {
 public:
@@ -15,11 +15,12 @@ public:
     {
         ledControl->minBrightness = 0;
         ledControl->addressingMode = Mirror;
+        return true;
     }
 
     bool update(bool realMode)
     {
-        if (micros() - lastShiftTime >= SWEEP_DELAY)
+        if (micros() - lastShiftTime >= CLIMB_DELAY)
         {
             lastShiftTime = micros();
             coord += 1;
@@ -46,6 +47,7 @@ public:
 
     bool exit(int param)
     {
+        return true;
     }
 
 private:

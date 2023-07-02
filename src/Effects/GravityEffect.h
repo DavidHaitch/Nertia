@@ -43,7 +43,7 @@ private:
     float dot = 0;
     float gravity = 25.0;
     float speed = 0;
-    int wait = 1000/60;
+    uint16_t wait = 1000/60;
     long lastCalc = 0;
 };
 #endif
