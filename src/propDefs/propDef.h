@@ -1,4 +1,4 @@
-#define BATON
+#define MINIWAND
 
 #ifdef BATON
 #include "batonPropDef.h"
@@ -8,4 +8,7 @@
 #endif
 #ifdef DART
 #include "dartPropDef.h"
+#endif
+#ifdef MINIWAND
+#include "miniwandPropDef.h"
 #endif

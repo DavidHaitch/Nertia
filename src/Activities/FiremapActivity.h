@@ -39,6 +39,9 @@ public:
 #ifdef STAFF
             int spinout = 360 * 4;
 #endif
+#ifdef MINIWAND
+            int spinout = 360 / 8;
+#endif
             for (int i = 0; i < TRUE_LEDS / 2; i++)
             {
                 int coolingFactor = map(angVel, 0, spinout, 2, 8);
