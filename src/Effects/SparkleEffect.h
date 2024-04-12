@@ -13,20 +13,30 @@ public:
     {
 
         int angVel = (motionState->angularVelocity * (180 / 3.14159));
-        EVERY_N_MILLIS(100)
+        float axialError = 9.81 - abs(motionState->rawAxialAccel);
+        if (motionState->jerk > 0.65 || (motionState->jerk > 0.2 && axialError > 3.0))
         {
-            if (sparkles > 0)
-                sparkles--;
+            shaken = true;
         }
-        EVERY_N_MILLIS(200)
+
+        EVERY_N_MILLIS(300)
         {
-            if (sparkles < TRUE_LEDS / 8)
-                sparkles += map(angVel, 0,1080, 0, 6);
+            if (!shaken && sparkles > 0)
+                sparkles-=2;
+        }
+        EVERY_N_MILLIS(250)
+        {
+            if (shaken && sparkles < TRUE_LEDS - 4)
+            {
+                sparkles+=3;
+            }
+
+            shaken = false;
         }
 
         for (int i = 0; i < sparkles; i++)
         {
-            ledControl->leds[sparkleIndices[i]] = CRGB::White;
+            ledControl->leds[sparkleIndices[i]] = CRGB::Red;
         }
 
         EVERY_N_MILLIS(sparkleTime)
@@ -41,6 +51,7 @@ public:
     }
 
 private:
+    bool shaken = false;
     int sparkleTime = 50;
     int sparkles = 0;
     int sparkleIndices[TRUE_LEDS];

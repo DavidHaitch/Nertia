@@ -3,6 +3,7 @@
 #include "LedActivity.h"
 #include "../propDefs/propDef.h"
 
+
 class ColormapActivity : public LedActivity
 {
 public:
@@ -19,7 +20,7 @@ public:
 #ifdef DART
         ledControl->addressingMode = Mirror;
 #else
-        ledControl->addressingMode = Centered;
+        ledControl->addressingMode = Direct;
 #endif
         return true;
     }
@@ -38,7 +39,7 @@ public:
         uint8_t spatialShift = motionState->pointingZ * 1;
 #endif
 
-        for (int i = 0; i < TRUE_LEDS / 2; i++)
+        for (int i = 0; i < TRUE_LEDS; i++)
         {
             float r = baseDistance + (stepDistance * i);
             int c = inoise8(motionState->pointingX * r, motionState->pointingY * r, motionState->pointingZ * r) * 2;

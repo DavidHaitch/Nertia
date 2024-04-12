@@ -3,10 +3,10 @@
 
 #include <FastLED.h>
 #include "propDefs/propDef.h"
-#define COLOR_ORDER BGR
+#define COLOR_ORDER GRB
 #define DATA_PIN    17
 #define CLOCK_PIN   18
-#define LED_TYPE    APA102
+#define LED_TYPE    WS2812
 
 enum LedAddressingMode {Direct, Mirror, Centered};
 

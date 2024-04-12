@@ -30,14 +30,21 @@ DEFINE_GRADIENT_PALETTE(pfoenix_p){
 CRGBPalette16 palette;
 CRGBPalette16 oceanPalette = OceanColors_p;
 
-ColormapActivity colormap(&motionState, &ledControl, &palette, 1, 10);
+DEFINE_GRADIENT_PALETTE(powerCore_gp){
+    0, 0, 0, 0,
+    64, 0, 255, 0,
+    200, 0, 96, 64,
+    255, 0, 16, 0};
+CRGBPalette16 powerCore_p = powerCore_gp;
+
+ColormapActivity colormap(&motionState, &ledControl, &powerCore_p, 1, 10);
 ColormapActivity colormap_frantic(&motionState, &ledControl, &palette, 6000, 28);
 ColorswingActivity colorswing(&motionState, &ledControl);
 FiremapActivity firemap(&motionState, &ledControl);
 GravityActivity gravity(&motionState, &ledControl);
 FlashActivity flash(&motionState, &ledControl);
-ColorsweepActivity colorsweep(&motionState, &ledControl, &palette);
-ColorclimbActivity colorclimb(&motionState, &ledControl, &palette);
+ColorsweepActivity colorsweep(&motionState, &ledControl, &powerCore_p);
+ColorclimbActivity colorclimb(&motionState, &ledControl, &powerCore_p);
 ColorsweepActivity colorsweep_waterbend(&motionState, &ledControl, &oceanPalette);
 
 PovActivity pov(&motionState, &ledControl);
@@ -47,7 +54,7 @@ PlasmaActivity plasma(&motionState, &ledControl);
 #define NUM_BASE_ACTIVITIES 8
 LedActivity *baseActivities[NUM_BASE_ACTIVITIES] =
     {
-        &colormap,
+        &colorclimb,
         &colorsweep,
         &colorclimb,
         &firemap,
@@ -59,7 +66,7 @@ LedActivity *baseActivities[NUM_BASE_ACTIVITIES] =
 
 LedEffect *effects[NUM_BASE_ACTIVITIES] =
     {
-        &noop,
+        &sparkle,
         &noop,
         &sparkle,
         &noop,
@@ -70,15 +77,15 @@ LedEffect *effects[NUM_BASE_ACTIVITIES] =
     };
 
 #define BRIGHTNESS_SETTINGS 3
-int brightnesses[BRIGHTNESS_SETTINGS] = {16, 64, 128};
+int brightnesses[BRIGHTNESS_SETTINGS] = {128, 64, 128};
 
 LedActivity *base;
 LedEffect *effect;
 ConfigManager config;
 
 long lastDebugPrint = 0;
-bool effectEnable = false;
-bool isIgniting = true;
+bool effectEnable = true;
+bool isIgniting = false;
 
 long setupEndTime = 0;
 float getBatteryVolts()
@@ -129,18 +136,19 @@ void showBatteryVoltage()
 
 void setup()
 {
-    //Serial.begin(115200);
-    // while (!Serial){}
-    showBatteryVoltage();
+    //Serial.begin(9600);
+    //while (!Serial){}
+    //showBatteryVoltage();
 
     bool s = false;
     while (!imu.begin_SPI(ICM_CS))
     {
-        //Serial.println("Starting");
+        Serial.println("Starting");
         digitalWrite(17, s);
         delay(250);
         s = !s;
     }
+    Serial.println("IMU online");
 
     imu.setAccelRange(ICM20649_ACCEL_RANGE_4_G);
     imu.setAccelRateDivisor(0);
@@ -173,7 +181,7 @@ LedActivity *transitionActivity(LedActivity *from, LedActivity *to)
     return to;
 }
 
-bool configured = false;
+bool configured = true;
 void loop()
 {
     long start = millis();

@@ -14,7 +14,7 @@ public:
     bool enter(int param)
     {
         ledControl->minBrightness = 0;
-        ledControl->addressingMode = Mirror;
+        ledControl->addressingMode = Direct;
         return true;
     }
 
@@ -43,7 +43,7 @@ public:
         // 1, 0, 16,
         // 2, 0, 16,coord);
 
-        for (int i = 0; i < TRUE_LEDS / 2; i++)
+        for (int i = 0; i < TRUE_LEDS; i++)
         {
             int r = baseDistance + (stepDistance * (i + 1));
             int color = 0;
@@ -66,8 +66,8 @@ private:
     int coordRateOfChange;
     int offset;
     long lastShiftTime;
-    int baseDistance = 20; // governs how drastically color changes with movement
-    int stepDistance = 70; //governs how different each pixel is from the one before it.
+    int baseDistance = 200; // governs how drastically color changes with movement
+    int stepDistance = 25; //governs how different each pixel is from the one before it.
     CRGBPalette16* palette;
 };
 #endif

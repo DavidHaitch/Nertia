@@ -14,7 +14,7 @@ public:
     bool enter(int param)
     {
         ledControl->minBrightness = 0;
-        ledControl->addressingMode = Mirror;
+        ledControl->addressingMode = Direct;
         return true;
     }
 
@@ -25,6 +25,10 @@ public:
             lastShiftTime = micros();
             coord += 1;
             float shiftVector = motionState->pointingZ;
+            if (abs(shiftVector) < 0.1)
+            {
+                shiftVector < 0 ? shiftVector = -0.1 : shiftVector = 0.1;
+            }
 #ifdef DART
             shiftVector *= -1;
 #endif
@@ -32,7 +36,7 @@ public:
         }
 
         int beat = beatsin8(60, 0, abs(motionState->pointingZ) * 255.0);
-        for (int i = 0; i < TRUE_LEDS / 2; i++)
+        for (int i = 0; i < TRUE_LEDS; i++)
         {
             int r = baseDistance + (stepDistance * (i + vShift + 1));
             int color = 0;
@@ -54,8 +58,8 @@ private:
     long coord;
     float vShift;
     long lastShiftTime;
-    int baseDistance = 2;  // governs how drastically color changes with movement
-    int stepDistance = 16; // governs how different each pixel is from the one before it.
+    int baseDistance = 200; // governs how drastically color changes with movement
+    int stepDistance = 35;  // governs how different each pixel is from the one before it.
     CRGBPalette16 *palette;
 };
 #endif

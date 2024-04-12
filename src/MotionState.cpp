@@ -54,7 +54,7 @@ int MotionState::Update(Adafruit_ICM20649 *imu)
     float caY = a.acceleration.y;
     float caZ = a.acceleration.z;
 
-    rawAxialAccel = caY;
+    rawAxialAccel = caZ;
 
     // cA = angVel^2 * radius
     centripetalAccel = (angularVelocity * angularVelocity) * (PROPLENGTH / 2);
