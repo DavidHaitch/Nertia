@@ -54,8 +54,7 @@ LedActivity *baseActivities[NUM_BASE_ACTIVITIES] =
         &gravity,
         &plasma,
         &zap,
-        &colorswing
-    };
+        &colorswing};
 
 LedEffect *effects[NUM_BASE_ACTIVITIES] =
     {
@@ -66,8 +65,7 @@ LedEffect *effects[NUM_BASE_ACTIVITIES] =
         &brightmap,
         &brightswing,
         &noop,
-        &brightmap
-    };
+        &brightmap};
 
 #define BRIGHTNESS_SETTINGS 3
 int brightnesses[BRIGHTNESS_SETTINGS] = {16, 64, 128};
@@ -93,7 +91,8 @@ float getBatteryVolts()
 void showBatteryVoltage()
 {
     float vbat = 0.0;
-    int samples = 100;
+
+    int samples = 20;
     for (int i = 0; i < samples; i++)
     {
         vbat += getBatteryVolts();
@@ -103,6 +102,11 @@ void showBatteryVoltage()
     vbat /= samples;
 
     int mapped = map(vbat * 10.0, 33, 42, 2, NUM_LEDS);
+    if (mapped < 3)
+    {
+        mapped = 3;
+    }
+
     Serial.println(vbat);
     ledControl.Clear();
     CRGB c = CRGB::Green;
@@ -116,27 +120,34 @@ void showBatteryVoltage()
         c = CRGB::Red;
     }
 
-    for (int i = 0; i < mapped; i++)
-    {
-        ledControl.leds[i] = c;
-    }
-
     ledControl.addressingMode = Centered;
+    long displayStart = millis();
+    while (millis() - displayStart < 750)
+    {
+        CRGB indicatorColor = c;
+        if (vbat < 3.4 && (millis() / 50) % 2 == 0)
+        {
+            indicatorColor = CRGB::Black;
+        }
 
-    ledControl.Refresh();
-    delay(750);
+        for (int i = 0; i < mapped; i++)
+        {
+            ledControl.leds[i] = indicatorColor;
+        }
+        ledControl.Refresh();
+    }
 }
 
 void setup()
 {
-    //Serial.begin(115200);
+    // Serial.begin(115200);
     // while (!Serial){}
     showBatteryVoltage();
 
     bool s = false;
     while (!imu.begin_SPI(ICM_CS))
     {
-        //Serial.println("Starting");
+        // Serial.println("Starting");
         digitalWrite(17, s);
         delay(250);
         s = !s;
