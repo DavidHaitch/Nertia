@@ -138,32 +138,6 @@ int MotionState::Update(Adafruit_ICM20649 *imu)
     pointingX = vprime.x;
     pointingY = vprime.y;
     pointingZ = vprime.z;
-    // if (startTime - lastDebugPrintTime > 100)
-    // {
-    //     lastDebugPrintTime = startTime;
-
-    //     // Serial.print(pointingX);
-    //     // Serial.print("\t");
-    //     // Serial.print(pointingY);
-    //     // Serial.print("\t");
-    //     // Serial.println(pointingZ);
-    //     // Serial.print(orientation.getYawRadians());
-    //     // Serial.print("\t");
-    //     // Serial.print(orientation.getPitchRadians());
-    //     // Serial.print("\t");
-    //     // Serial.println(orientation.getRollRadians());
-    //     String s = String("{\"time\":") + startTime
-    //     + String(", \"type\":") + String("\"angles\"")
-    //     + String(", \"qw\":") + qw
-    //     + String(", \"qx\":") + qx
-    //     + String(", \"qy\":") + qy
-    //     + String(", \"qz\":") + qz
-    //     + String(", \"x\":") + pointingX
-    //     + String(", \"y\":") + pointingY
-    //     + String(", \"z\":") + pointingZ
-    //     + "}";
-    //     Serial.println(s);
-    // }
 
     long finishTime = millis();
     int dT = finishTime - startTime;

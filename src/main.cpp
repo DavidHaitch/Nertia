@@ -1,3 +1,5 @@
+// #define SERIALDEBUG
+
 #include "propDefs/propDef.h"
 
 #include <SPI.h>
@@ -8,6 +10,13 @@
 #include "LedControl.h"
 #include "Activities.h"
 #include "Effects.h"
+
+void DebugLogLine(const char *text)
+{
+#ifdef SERIALDEBUG
+    Serial.println(text);
+#endif
+}
 
 Adafruit_ICM20649 imu = Adafruit_ICM20649();
 
@@ -67,8 +76,13 @@ LedEffect *effects[NUM_BASE_ACTIVITIES] =
         &noop,
         &brightmap};
 
+#ifndef LIZARDTAIL
 #define BRIGHTNESS_SETTINGS 3
 int brightnesses[BRIGHTNESS_SETTINGS] = {16, 64, 128};
+#else
+#define BRIGHTNESS_SETTINGS 3 //Lizard tail fails at high brightnesses
+int brightnesses[BRIGHTNESS_SETTINGS] = {16, 32, 64};
+#endif
 
 LedActivity *base;
 LedEffect *effect;
@@ -107,7 +121,6 @@ void showBatteryVoltage()
         mapped = 3;
     }
 
-    Serial.println(vbat);
     ledControl.Clear();
     CRGB c = CRGB::Green;
     if (vbat >= 3.6 && vbat <= 3.9)
@@ -140,16 +153,23 @@ void showBatteryVoltage()
 
 void setup()
 {
-    // Serial.begin(115200);
-    // while (!Serial){}
+#ifdef SERIALDEBUG
+    Serial.begin(115200);
+    while (!Serial)
+    {
+    }
+#endif
+
+#ifndef LIZARDTAIL //The lizard tail's vbat readout is shot
     showBatteryVoltage();
+#endif
 
     bool s = false;
     while (!imu.begin_SPI(ICM_CS))
     {
-        // Serial.println("Starting");
+        DebugLogLine("Starting");
         digitalWrite(17, s);
-        delay(250);
+        delay(50);
         s = !s;
     }
 
@@ -231,23 +251,25 @@ void loop()
     int pushStart = millis();
     ledControl.Refresh();
     int pushLag = millis() - pushStart;
-    // if (start - lastDebugPrint > 16)
-    // {
-    //     lastDebugPrint = start;
-    //     String s = String("{\"time\":") + start
-    //     + String(", \"type\":") + String("\"angles\"")
-    //     + String(", \"motionLag\":") + motionLag
-    //     + String(", \"renderLag\":") + renderLag
-    //     + String(", \"pushLag\":") + pushLag
-    //     + String(", \"totalLag\":") + (millis() - start)
-    //     + String(", \"qw\":") + motionState.qw
-    //     + String(", \"qx\":") + motionState.qx
-    //     + String(", \"qy\":") + motionState.qy
-    //     + String(", \"qz\":") + motionState.qz
-    //     + String(", \"x\":") + motionState.pointingX
-    //     + String(", \"y\":") + motionState.pointingY
-    //     + String(", \"z\":") + motionState.pointingZ
-    //     + "}";
-    //     Serial.println(s);
-    // }
+    #ifdef SERIALDEBUG
+    if (start - lastDebugPrint > 16)
+    {
+        lastDebugPrint = start;
+        String s = String("{\"time\":") + start
+        + String(", \"type\":") + String("\"angles\"")
+        + String(", \"motionLag\":") + motionLag
+        + String(", \"renderLag\":") + renderLag
+        + String(", \"pushLag\":") + pushLag
+        + String(", \"totalLag\":") + (millis() - start)
+        + String(", \"qw\":") + motionState.qw
+        + String(", \"qx\":") + motionState.qx
+        + String(", \"qy\":") + motionState.qy
+        + String(", \"qz\":") + motionState.qz
+        + String(", \"x\":") + motionState.pointingX
+        + String(", \"y\":") + motionState.pointingY
+        + String(", \"z\":") + motionState.pointingZ
+        + "}";
+        DebugLogLine(s);
+    }
+    #endif
 }
