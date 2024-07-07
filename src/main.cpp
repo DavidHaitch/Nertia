@@ -1,8 +1,7 @@
-// #define SERIALDEBUG
-
+//#define SERIALDEBUG
+#include "arduino_m0_tweak.hpp"
 #include "propDefs/propDef.h"
 
-#include <SPI.h>
 #include <Adafruit_ICM20649.h>
 #define ICM_CS 3
 #include <Adafruit_Sensor.h>
@@ -10,13 +9,6 @@
 #include "LedControl.h"
 #include "Activities.h"
 #include "Effects.h"
-
-void DebugLogLine(const char *text)
-{
-#ifdef SERIALDEBUG
-    Serial.println(text);
-#endif
-}
 
 Adafruit_ICM20649 imu = Adafruit_ICM20649();
 
@@ -30,7 +22,7 @@ BrightmapEffect brightmap(&motionState, &ledControl);
 SparkleEffect sparkle(&motionState, &ledControl);
 NoopEffect noop(&motionState, &ledControl);
 MarchingEffect marching(&motionState, &ledControl);
-
+MotionMaskEffect motionMask(&motionState, &ledControl);
 DEFINE_GRADIENT_PALETTE(pfoenix_p){
     0, 0, 0, 0,
     200, 96, 0, 255,
@@ -39,7 +31,7 @@ DEFINE_GRADIENT_PALETTE(pfoenix_p){
 CRGBPalette16 palette;
 CRGBPalette16 oceanPalette = OceanColors_p;
 
-ColormapActivity colormap(&motionState, &ledControl, &palette, 1, 10);
+ColormapActivity colormap(&motionState, &ledControl, &palette, 10, 10);
 ColormapActivity colormap_frantic(&motionState, &ledControl, &palette, 6000, 28);
 ColorswingActivity colorswing(&motionState, &ledControl);
 FiremapActivity firemap(&motionState, &ledControl);
@@ -57,9 +49,9 @@ PlasmaActivity plasma(&motionState, &ledControl);
 LedActivity *baseActivities[NUM_BASE_ACTIVITIES] =
     {
         &colormap,
-        &colorsweep,
-        &colorclimb,
         &firemap,
+        &colorclimb,
+        &colorsweep,
         &gravity,
         &plasma,
         &zap,
@@ -67,7 +59,7 @@ LedActivity *baseActivities[NUM_BASE_ACTIVITIES] =
 
 LedEffect *effects[NUM_BASE_ACTIVITIES] =
     {
-        &noop,
+        &motionMask,
         &noop,
         &sparkle,
         &noop,
@@ -80,7 +72,7 @@ LedEffect *effects[NUM_BASE_ACTIVITIES] =
 #define BRIGHTNESS_SETTINGS 3
 int brightnesses[BRIGHTNESS_SETTINGS] = {16, 64, 128};
 #else
-#define BRIGHTNESS_SETTINGS 3 //Lizard tail fails at high brightnesses
+#define BRIGHTNESS_SETTINGS 3 // Lizard tail fails at high brightnesses
 int brightnesses[BRIGHTNESS_SETTINGS] = {16, 32, 64};
 #endif
 
@@ -153,6 +145,7 @@ void showBatteryVoltage()
 
 void setup()
 {
+     m0tweak::cpuFrequency(48);
 #ifdef SERIALDEBUG
     Serial.begin(115200);
     while (!Serial)
@@ -160,14 +153,16 @@ void setup()
     }
 #endif
 
-#ifndef LIZARDTAIL //The lizard tail's vbat readout is shot
+#ifndef LIZARDTAIL // The lizard tail's vbat readout is shot
     showBatteryVoltage();
 #endif
 
     bool s = false;
     while (!imu.begin_SPI(ICM_CS))
     {
-        DebugLogLine("Starting");
+#ifdef SERIALDEBUG
+        Serial.println("Starting IMU");
+#endif
         digitalWrite(17, s);
         delay(50);
         s = !s;
@@ -237,9 +232,11 @@ void loop()
         }
     }
 
+        effect->apply(0);
+
     if (effectEnable && configured)
     {
-        effect->apply(0);
+        //effect->apply(0);
     }
 
     if (isIgniting)
@@ -251,25 +248,25 @@ void loop()
     int pushStart = millis();
     ledControl.Refresh();
     int pushLag = millis() - pushStart;
-    #ifdef SERIALDEBUG
+#ifdef SERIALDEBUG
     if (start - lastDebugPrint > 16)
     {
         lastDebugPrint = start;
-        String s = String("{\"time\":") + start
-        + String(", \"type\":") + String("\"angles\"")
-        + String(", \"motionLag\":") + motionLag
-        + String(", \"renderLag\":") + renderLag
-        + String(", \"pushLag\":") + pushLag
-        + String(", \"totalLag\":") + (millis() - start)
-        + String(", \"qw\":") + motionState.qw
-        + String(", \"qx\":") + motionState.qx
-        + String(", \"qy\":") + motionState.qy
-        + String(", \"qz\":") + motionState.qz
-        + String(", \"x\":") + motionState.pointingX
-        + String(", \"y\":") + motionState.pointingY
-        + String(", \"z\":") + motionState.pointingZ
-        + "}";
-        DebugLogLine(s);
+        String s = String("{\n\t\"time\":") + start + ",\n";
+        s += String("\t\"type\":") + String("\"angles\"") + ",\n";
+        s += String("\t\"motionLag\":") + motionLag + ",\n";
+        s += String("\t\"renderLag\":") + renderLag + ",\n";
+        s += String("\t\"pushLag\":") + pushLag + ",\n";
+        s += String("\t\"totalLag\":") + (millis() - start) + ",\n";
+        s += String("\t\"qw\":") + motionState.qw + ",";
+        s += String("\"qx\":") + motionState.qx + ",";
+        s += String("\"qy\":") + motionState.qy + ",";
+        s += String("\"qz\":") + motionState.qz + ",\n";
+        s += String("\t\"x\":") + motionState.pointingX + ",\n";
+        s += String("\t\"y\":") + motionState.pointingY + ",\n";
+        s += String("\t\"z\":") + motionState.pointingZ + "\n";
+        s += "}";
+        Serial.println(s);
     }
-    #endif
+#endif
 }

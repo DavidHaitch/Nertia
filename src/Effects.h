@@ -8,4 +8,5 @@
 #include "Effects/NoopEffect.h"
 #include "Effects/GravityEffect.h"
 #include "Effects/MarchingEffect.h"
+#include "Effects/MotionMaskEffect.h"
 #endif

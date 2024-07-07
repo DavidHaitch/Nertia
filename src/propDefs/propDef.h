@@ -1,4 +1,4 @@
-#define LIZARDTAIL
+#define DART
 
 #ifdef BATON
 #include "batonPropDef.h"
