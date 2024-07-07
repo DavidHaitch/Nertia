@@ -31,16 +31,14 @@ public:
             int angVel = (motionState->angularVelocity * (180 / 3.14159));
 #ifdef DART
             int spinout = 360 * 12;
-
-#endif
-#ifdef BATON
+#elif defined(BATON)
             int spinout = 360 * 6;
-#endif
-#ifdef STAFF
+#elif defined(STAFF)
             int spinout = 360 * 4;
-#endif
-#ifdef MINIWAND
+#elif defined(MINIWAND)
             int spinout = 360 / 8;
+#elif defined(LIZARDTAIL)
+            int spinout = 360 * 2;
 #endif
             for (int i = 0; i < TRUE_LEDS / 2; i++)
             {

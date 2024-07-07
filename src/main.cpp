@@ -1,3 +1,5 @@
+// #define SERIALDEBUG
+
 #include "propDefs/propDef.h"
 
 #include <SPI.h>
@@ -8,6 +10,13 @@
 #include "LedControl.h"
 #include "Activities.h"
 #include "Effects.h"
+
+void DebugLogLine(const char *text)
+{
+#ifdef SERIALDEBUG
+    Serial.println(text);
+#endif
+}
 
 Adafruit_ICM20649 imu = Adafruit_ICM20649();
 
@@ -54,8 +63,7 @@ LedActivity *baseActivities[NUM_BASE_ACTIVITIES] =
         &gravity,
         &plasma,
         &zap,
-        &colorswing
-    };
+        &colorswing};
 
 LedEffect *effects[NUM_BASE_ACTIVITIES] =
     {
@@ -66,11 +74,15 @@ LedEffect *effects[NUM_BASE_ACTIVITIES] =
         &brightmap,
         &brightswing,
         &noop,
-        &brightmap
-    };
+        &brightmap};
 
+#ifndef LIZARDTAIL
 #define BRIGHTNESS_SETTINGS 3
 int brightnesses[BRIGHTNESS_SETTINGS] = {16, 64, 128};
+#else
+#define BRIGHTNESS_SETTINGS 3 //Lizard tail fails at high brightnesses
+int brightnesses[BRIGHTNESS_SETTINGS] = {16, 32, 64};
+#endif
 
 LedActivity *base;
 LedEffect *effect;
@@ -93,7 +105,8 @@ float getBatteryVolts()
 void showBatteryVoltage()
 {
     float vbat = 0.0;
-    int samples = 100;
+
+    int samples = 20;
     for (int i = 0; i < samples; i++)
     {
         vbat += getBatteryVolts();
@@ -103,7 +116,11 @@ void showBatteryVoltage()
     vbat /= samples;
 
     int mapped = map(vbat * 10.0, 33, 42, 2, NUM_LEDS);
-    Serial.println(vbat);
+    if (mapped < 3)
+    {
+        mapped = 3;
+    }
+
     ledControl.Clear();
     CRGB c = CRGB::Green;
     if (vbat >= 3.6 && vbat <= 3.9)
@@ -116,29 +133,43 @@ void showBatteryVoltage()
         c = CRGB::Red;
     }
 
-    for (int i = 0; i < mapped; i++)
-    {
-        ledControl.leds[i] = c;
-    }
-
     ledControl.addressingMode = Centered;
+    long displayStart = millis();
+    while (millis() - displayStart < 750)
+    {
+        CRGB indicatorColor = c;
+        if (vbat < 3.4 && (millis() / 50) % 2 == 0)
+        {
+            indicatorColor = CRGB::Black;
+        }
 
-    ledControl.Refresh();
-    delay(750);
+        for (int i = 0; i < mapped; i++)
+        {
+            ledControl.leds[i] = indicatorColor;
+        }
+        ledControl.Refresh();
+    }
 }
 
 void setup()
 {
-    //Serial.begin(115200);
-    // while (!Serial){}
+#ifdef SERIALDEBUG
+    Serial.begin(115200);
+    while (!Serial)
+    {
+    }
+#endif
+
+#ifndef LIZARDTAIL //The lizard tail's vbat readout is shot
     showBatteryVoltage();
+#endif
 
     bool s = false;
     while (!imu.begin_SPI(ICM_CS))
     {
-        //Serial.println("Starting");
+        DebugLogLine("Starting");
         digitalWrite(17, s);
-        delay(250);
+        delay(50);
         s = !s;
     }
 
@@ -220,23 +251,25 @@ void loop()
     int pushStart = millis();
     ledControl.Refresh();
     int pushLag = millis() - pushStart;
-    // if (start - lastDebugPrint > 16)
-    // {
-    //     lastDebugPrint = start;
-    //     String s = String("{\"time\":") + start
-    //     + String(", \"type\":") + String("\"angles\"")
-    //     + String(", \"motionLag\":") + motionLag
-    //     + String(", \"renderLag\":") + renderLag
-    //     + String(", \"pushLag\":") + pushLag
-    //     + String(", \"totalLag\":") + (millis() - start)
-    //     + String(", \"qw\":") + motionState.qw
-    //     + String(", \"qx\":") + motionState.qx
-    //     + String(", \"qy\":") + motionState.qy
-    //     + String(", \"qz\":") + motionState.qz
-    //     + String(", \"x\":") + motionState.pointingX
-    //     + String(", \"y\":") + motionState.pointingY
-    //     + String(", \"z\":") + motionState.pointingZ
-    //     + "}";
-    //     Serial.println(s);
-    // }
+    #ifdef SERIALDEBUG
+    if (start - lastDebugPrint > 16)
+    {
+        lastDebugPrint = start;
+        String s = String("{\"time\":") + start
+        + String(", \"type\":") + String("\"angles\"")
+        + String(", \"motionLag\":") + motionLag
+        + String(", \"renderLag\":") + renderLag
+        + String(", \"pushLag\":") + pushLag
+        + String(", \"totalLag\":") + (millis() - start)
+        + String(", \"qw\":") + motionState.qw
+        + String(", \"qx\":") + motionState.qx
+        + String(", \"qy\":") + motionState.qy
+        + String(", \"qz\":") + motionState.qz
+        + String(", \"x\":") + motionState.pointingX
+        + String(", \"y\":") + motionState.pointingY
+        + String(", \"z\":") + motionState.pointingZ
+        + "}";
+        DebugLogLine(s);
+    }
+    #endif
 }
