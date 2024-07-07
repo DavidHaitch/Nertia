@@ -6,7 +6,7 @@
 #define COLOR_ORDER BGR
 #define DATA_PIN    17
 #define CLOCK_PIN   18
-#define LED_TYPE    APA102
+#define LED_TYPE    SK9822
 
 enum LedAddressingMode {Direct, Mirror, Centered};
 

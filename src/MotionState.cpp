@@ -81,7 +81,7 @@ int MotionState::Update(Adafruit_ICM20649 *imu)
 
     if (maxJerk < 1.0 * jerk)
     {
-        //We don't have enough samples to really make sense.
+        // We don't have enough samples to really make sense.
         relativeJerk = 0;
     }
     else
@@ -101,6 +101,11 @@ int MotionState::Update(Adafruit_ICM20649 *imu)
         relativeAngularVelocity = (angularVelocity / maxAngularVelocity) * 255.0;
     }
 
+    if (angularVelocity < 0.1 && maxAngularVelocity - angularVelocity < 0.1)
+    {
+        relativeAngularVelocity = 0;
+    }
+
     maxAngularVelocity *= 0.999;
 
     angularAcceleration = abs(angularVelocity - lastAngularVelocity);
@@ -113,7 +118,7 @@ int MotionState::Update(Adafruit_ICM20649 *imu)
 
     if (maxAngularAcceleration < 1 * angularAcceleration)
     {
-        //We don't have enough samples to really make sense.
+        // We don't have enough samples to really make sense.
         relativeAngularAcceleration = 0;
     }
     else

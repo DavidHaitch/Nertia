@@ -37,10 +37,10 @@ public:
 #else
         uint8_t spatialShift = motionState->pointingZ * 1;
 #endif
-
+        int currentStepDistance = stepDistance + map(abs(motionState->relativeAngularVelocity), 0, 255, 0, stepDistance * 2);
         for (int i = 0; i < TRUE_LEDS / 2; i++)
         {
-            float r = baseDistance + (stepDistance * i);
+            float r = baseDistance + (currentStepDistance * i);
             int c = inoise8(motionState->pointingX * r, motionState->pointingY * r, motionState->pointingZ * r) * 2;
             CRGB color = ColorFromPalette(*palette, c + shift + spatialShift, 255, LINEARBLEND);
             ledControl->leds[i] = color;
