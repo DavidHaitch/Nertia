@@ -1,15 +1,16 @@
 #ifndef MOTIONMASKEFFECT_H
 #define MOTIONMASKEFFECT_H
+#include "../PatternMasks/sine8x28_thinTop.h"
 
 #include "LedEffect.h"
-#define MOTIONMASK_ANIMATIONFRAMES 13
-#define MOTIONMASK_ANIMATIONRESOLUTION 8
 
 class MotionMaskEffect : public LedEffect
 {
 public:
     MotionMaskEffect(MotionState *_motionState, LedControl *_ledControl) : LedEffect(_motionState, _ledControl)
     {
+        mask = new sine8x28_thinTop_Mask();
+        mask->setMirror(true);
     }
 
     bool apply(int param)
@@ -20,48 +21,20 @@ public:
             currentStepDelay = 0;
         if (micros() > nextStepChange)
         {
-            stepCounter++;
+            mask->step();
             nextStepChange = micros() + currentStepDelay;
         }
 
-        bool direction = true;
         for (int i = 0; i < TRUE_LEDS / 2; i++)
         {
-            if (i % MOTIONMASK_ANIMATIONRESOLUTION == 0)
-            {
-                direction = !direction;
-            }
-
-            if (direction)
-            {
-                ledControl->leds[i].fadeToBlackBy(animationOffsets[stepCounter % MOTIONMASK_ANIMATIONFRAMES][i % MOTIONMASK_ANIMATIONRESOLUTION] * 31);
-            }
-            else
-            {
-                ledControl->leds[i].fadeToBlackBy(animationOffsets[stepCounter % MOTIONMASK_ANIMATIONFRAMES][MOTIONMASK_ANIMATIONRESOLUTION - (i % MOTIONMASK_ANIMATIONRESOLUTION)] * 31);
-            }
+            ledControl->leds[i].fadeToBlackBy(mask->get(i));
         }
 
         return true;
     }
 
 private:
-    int animationOffsets[MOTIONMASK_ANIMATIONFRAMES][MOTIONMASK_ANIMATIONRESOLUTION] =
-        {
-            {8, 8, 0, 0, 0, 0, 0, 0},
-            {8, 8, 0, 0, 0, 0, 0, 0},
-            {0, 8, 8, 0, 0, 0, 0, 0},
-            {0, 0, 8, 8, 0, 0, 0, 0},
-            {0, 0, 0, 8, 8, 0, 0, 0},
-            {0, 0, 0, 0, 8, 8, 8, 0},
-            {0, 0, 0, 0, 0, 0, 8, 8},
-            {0, 0, 0, 0, 0, 0, 8, 8},
-            {0, 0, 0, 0, 0, 0, 8, 8},
-            {0, 0, 0, 0, 0, 8, 8, 0},
-            {0, 0, 0, 8, 8, 0, 0, 0},
-            {0, 0, 8, 8, 0, 0, 0, 0},
-            {0, 8, 8, 0, 0, 0, 0, 0},
-            };
+    PatternMaskSource* mask;
     uint16_t baseStepDelay = 5000;
     long nextStepChange = 0;
     uint8_t stepCounter = 0;

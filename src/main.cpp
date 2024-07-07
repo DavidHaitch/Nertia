@@ -59,7 +59,7 @@ LedActivity *baseActivities[NUM_BASE_ACTIVITIES] =
 
 LedEffect *effects[NUM_BASE_ACTIVITIES] =
     {
-        &noop,
+        &motionMask,
         &noop,
         &sparkle,
         &noop,
