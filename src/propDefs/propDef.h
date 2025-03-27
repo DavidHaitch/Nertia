@@ -1,4 +1,4 @@
-#define DART
+#define STAFF
 
 #ifdef BATON
 #include "batonPropDef.h"

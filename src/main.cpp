@@ -1,5 +1,4 @@
 //#define SERIALDEBUG
-#include "arduino_m0_tweak.hpp"
 #include "propDefs/propDef.h"
 
 #include <Adafruit_ICM20649.h>
@@ -59,13 +58,13 @@ LedActivity *baseActivities[NUM_BASE_ACTIVITIES] =
 
 LedEffect *effects[NUM_BASE_ACTIVITIES] =
     {
-        &motionMask,
+        &noop,
         &noop,
         &sparkle,
         &noop,
         &brightmap,
         &brightswing,
-        &noop,
+        &motionMask,
         &brightmap};
 
 #ifndef LIZARDTAIL
@@ -102,12 +101,12 @@ void showBatteryVoltage()
     for (int i = 0; i < samples; i++)
     {
         vbat += getBatteryVolts();
-        delay(1);
+        delay(5);
     }
 
     vbat /= samples;
 
-    int mapped = map(vbat * 10.0, 33, 42, 2, NUM_LEDS);
+    int mapped = map(vbat * 10.0, 33, 41, 2, NUM_LEDS);
     if (mapped < 3)
     {
         mapped = 3;
@@ -145,7 +144,6 @@ void showBatteryVoltage()
 
 void setup()
 {
-     m0tweak::cpuFrequency(48);
 #ifdef SERIALDEBUG
     Serial.begin(115200);
     while (!Serial)
@@ -154,6 +152,7 @@ void setup()
 #endif
 
 #ifndef LIZARDTAIL // The lizard tail's vbat readout is shot
+    delay(50);
     showBatteryVoltage();
 #endif
 

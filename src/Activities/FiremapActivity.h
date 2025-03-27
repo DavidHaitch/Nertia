@@ -30,7 +30,7 @@ public:
             lastFireTick = now;
             int angVel = (motionState->angularVelocity * (180 / 3.14159));
 #ifdef DART
-            int spinout = 360 * 12;
+            int spinout = 360 * 4;
 #elif defined(BATON)
             int spinout = 360 * 6;
 #elif defined(STAFF)
@@ -42,21 +42,21 @@ public:
 #endif
             for (int i = 0; i < TRUE_LEDS / 2; i++)
             {
-                int coolingFactor = map(angVel, 0, spinout, 2, 8);
-                int temperature = map(angVel, 0, spinout, 170, 240);
+                int coolingFactor = map(angVel, 0, spinout, 1, 12);
+                int temperature = map(angVel, 0, spinout, 128, 240);
                 int heatChance = map(angVel, 0, spinout, 4, 24);
                 if (angVel > spinout)
                 {
                     temperature /= 2;
                     heatChance /= 8;
-                    // coolingFactor *= 2;
+                    coolingFactor *= 2;
                 }
 
                 if (heat[i] > coolingFactor)
                 {
                     heat[i] -= coolingFactor;
                 }
-                else if (angVel > spinout && rand() % 255 < 8)
+                else if (angVel > spinout && rand() % 256 < 8)
                 {
                     heat[i] = (-1 * rand() % 1024) - 512;
                 }
@@ -65,7 +65,7 @@ public:
                     heat[i] = 0;
                 }
 
-                if (rand() % 255 < heatChance && heat[i] < temperature)
+                if (rand() % 256 < heatChance && heat[i] < temperature)
                 {
                     heat[i] += temperature;
                 }
@@ -78,57 +78,15 @@ public:
             // cA = angVel^2 * radius
             float accel = motionState->rawAxialAccel * -1;
 
-            if (motionState->centripetalAccel > abs(accel))
+            for (int i = 0; i < (TRUE_LEDS / 2); i++)
             {
-                for (int i = TRUE_LEDS / 4; i > 0; i--)
-                {
-                    if (heat[i] >= 0 && heat[i - 1] >= 0)
-                    {
-                        heat[i] += heat[i - 1] * 0.75;
-                        heat[i - 1] -= heat[i - 1] * 0.75;
-                    }
-                }
-                for (int i = 0; i < (TRUE_LEDS / 4); i++)
-                {
-                    if (heat[i] >= 0 && heat[i + 1] >= 0)
-                    {
-                        heat[i] += heat[i + 1] * 0.75;
-                        heat[i + 1] -= heat[i + 1] * 0.75;
-                    }
-                }
+                if(heat[i] < 0.25) continue;
+                if(i) heat[i - 1] += heat[i] * 0.025;
+                heat[i + 1] += heat[i] * 0.025;
+                heat[i] -= heat[i] * 0.05;
             }
-            else
-            {
-#ifdef DART
-                if (motionState->rawAxialAccel > 0)
-#endif
-#ifndef DART
-                    if (motionState->rawAxialAccel < 0)
-#endif
-                    {
-                        for (int i = TRUE_LEDS / 2; i > 0; i--)
-                        {
-                            if (heat[i] >= 0 && heat[i - 1] >= 0)
-                            {
-                                heat[i] += heat[i - 1] * 0.75;
-                                heat[i - 1] -= heat[i - 1] * 0.75;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        for (int i = 0; i < (TRUE_LEDS / 2) - 1; i++)
-                        {
-                            if (heat[i] >= 0 && heat[i + 1] >= 0)
-                            {
-                                heat[i] += heat[i + 1] * 0.75;
-                                heat[i + 1] -= heat[i + 1] * 0.75;
-                            }
-                        }
 
-                        heat[0] = 0;
-                    }
-            }
+            // heat[0] = 0;
         }
 
         for (int i = 0; i < TRUE_LEDS / 2; i++)
@@ -144,8 +102,6 @@ public:
             }
         }
 
-        // blur1d(ledControl->leds, NUM_LEDS / 2, 64);
-        // blur1d(ledControl->leds, NUM_LEDS / 2, 92);
         return true;
     }
 
